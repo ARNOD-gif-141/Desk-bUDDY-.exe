@@ -263,6 +263,7 @@ class Link extends ChangeNotifier {
     String c(String s, int n) => (s.length > n ? s.substring(0, n) : s).replaceAll('|', '/').replaceAll('\n', ' ');
     send('MU|1|${c(musicApp, 20)}|${c(musicTitle, 60)}|${c(artist, 36)}');
   }
+  void musicSync() { _musicNow(); }
   void _musicNow() { if (musicTitle.isNotEmpty) _musicSend(''); else send('MU|2|||'); }
 }
 
@@ -374,12 +375,12 @@ class _ControlTabState extends State<ControlTab> {
         ]),
         card('Screens', [Wrap(children: [
           cmdBtn('Time', 'MTIME'), cmdBtn('Weather', 'MWEATHER'), cmdBtn('3-day', 'MFORECAST'), cmdBtn('Info', 'MINFO'),
-          cmdBtn('Manual', 'MMAN1'), cmdBtn('Music', 'MMUSIC'), cmdBtn('Flip a coin', 'MCOIN'), cmdBtn('Flappy', 'MDINO'),
+          cmdBtn('Manual', 'MMAN1'), cmdBtn('Music', 'MMUSIC'), cmdBtn('Flip a coin', 'MCOIN'), cmdBtn('Dino game', 'MDINO'),
           cmdBtn('Stopwatch', 'MSW'), cmdBtn('Sleep', 'MSLEEP'),
         ])]),
         card('Touch pad', [
           Wrap(children: [for (final n in [1, 2, 3, 4, 5, 6]) cmdBtn('$n tap${n > 1 ? 's' : ''}', 'PAD|R|$n'), cmdBtn('Hold 1s', 'PAD|R|H'), cmdBtn('Hold 3s', 'PAD|R|F'), cmdBtn('Hold 5s', 'PAD|R|L')]),
-          const Text('1 next face, 2 weather, 3 time, 4 manual, 5 music, 6 coin, hold 3s flappy (then 2 taps start, 1 tap flap, 2 taps quit)', style: TextStyle(fontSize: 12)),
+          const Text('1 next face, 2 weather, 3 time, 4 manual, 5 music, 6 coin, hold 3s dino game (2 taps start, 1 tap jump, 3 taps quit)', style: TextStyle(fontSize: 12)),
         ]),
         card('Timer and stopwatch', [
           Row(children: [
@@ -455,7 +456,12 @@ class MusicTab extends StatelessWidget {
           IconButton.filledTonal(onPressed: () => link.media('next'), icon: const Icon(Icons.skip_next)),
         ]),
         const SizedBox(height: 8),
-        Row(children: [cmdBtn('Open music mode on Desk Buddy', 'MMUSIC', filled: true)]),
+        Wrap(children: [
+          cmdBtn('Open music mode', 'MMUSIC', filled: true),
+          cmdBtn('Play/Pause (2 taps)', 'PAD|R|2'),
+          cmdBtn('Exit (1 tap)', 'PAD|R|1'),
+          Padding(padding: const EdgeInsets.all(3), child: FilledButton.tonal(onPressed: link.musicSync, child: const Text('Send now playing'))),
+        ]),
         const Text('On the Desk Buddy: 5 taps = music mode. 2 taps = play/pause, 1 tap = exit. Works with or without the phone connected.', style: TextStyle(fontSize: 12)),
       ]),
     ]));
